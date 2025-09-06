@@ -1,0 +1,40 @@
+# Netplan: 2 bridges, 1 subnet (IPv4 only on cloudbr0, cloudbr1 is L2-only)
+# Replace placeholders: IFACE0, IFACE1, PUBLIC_IP, PUBLIC_CIDR, PUBLIC_GW
+network:
+  version: 2
+  renderer: networkd
+
+  ethernets:
+    IFACE0:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    IFACE1:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+
+  bridges:
+    cloudbr0:
+      interfaces: [IFACE0]
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - PUBLIC_IP/PUBLIC_CIDR        # e.g., 203.0.113.10/24
+      routes:
+        - to: default
+          via: PUBLIC_GW               # e.g., 203.0.113.1
+      nameservers:
+        addresses: [1.1.1.1, 8.8.8.8]
+      parameters:
+        stp: false
+        forward-delay: 0
+
+    cloudbr1:
+      interfaces: [IFACE1]
+      dhcp4: false
+      dhcp6: false
+      # No IP addresses; L2-only bridge for CloudStack traffic
+      parameters:
+        stp: false
+        forward-delay: 0

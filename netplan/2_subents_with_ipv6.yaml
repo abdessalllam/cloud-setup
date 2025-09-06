@@ -1,0 +1,35 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    # Change "eno1" to your primary network interface name
+    eno1:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+  bridges:
+    cloudbr0:
+      dhcp4: false
+      dhcp6: false
+      # Change "eno1" to your primary network interface name
+      interfaces: [eno1]
+      addresses:
+        - PUBLIC_IP/CIDR # Replace with your actual public IP and CIDR
+        - 10.7.0.1/24 # Internal network for VMs (Editable)
+        - IPv6_ADDRESS/CIDR # Replace with your actual IPv6 address and CIDR
+      routes:
+        # IPv4 default route
+        - to: default
+          via: PUBLIC_IP_GATEWAY # Replace with your actual gateway
+        # IPv4 subnet route
+        - to: SECOND_IPv4_SUBNET/CIDR # Replace with your actual second IPv4 subnet and CIDR
+          via: 0.0.0.0
+          on-link: true
+        # IPv6 default route
+        - to: ::/0
+          via: IPv6_GATEWAY # Replace with your actual IPv6 gateway
+      nameservers:
+        addresses: [1.1.1.1, 8.8.8.8, 2606:4700:4700::1111]
+      parameters:
+        stp: false
+        forward-delay: 0
